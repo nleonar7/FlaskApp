@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block head%}
+<title>{{ post.title }}</title>
+{% endblock %}
+
+{% block body%}
+
+<img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
+        <h2> {{ post.title }}</h2>
+        <h4><a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a></h4>
+        <h10>{{ post.date_posted.strftime('%Y-%m-%d') }}</h10>
+        <br>
+        <br>
+
+        <p style="white-space:pre-wrap">{{ post.content }}</p>
+        {% if post.author == current_user %}
+                <a class="btn btn-danger btn-sm" href='/posts/delete/{{post.id}}'>Delete</a>
+                <a class="btn btn-primary btn-sm" href="/posts/edit/{{post.id}}">Edit</a>
+        {% endif %}
+        <hr>
+
+{% endblock body%}
+
+

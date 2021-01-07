@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block head%}
+<title>Home</title>
+{% endblock %}
+
+{% block body%}
+<br>
+<h1>Home Page</h1>
+<br>
+    <div>
+      <div class="bg-light p-5 rounded">
+        <div class="col-sm-8 mx-auto">
+          <h1>Welcome To The Property Blog</h1>
+          <p>Welcome to the website that welcomes your comments and critiques of apartments you've viewed. We'd like to know your opinion first hand and
+            request that you post in <a href="/posts">our posts section</a> to share your color so that we can share feedback and provide transparency to
+            owners and renters alike! </p>
+          <p>We are currently working on enhancing our interface to record your comments and provide visual aids to easily distinguish the benefits and
+            drawbacks of each property as seen from the perspective of the renter.
+            <a href="/">Currently this button just brings you home, but it will do something more dynamic in the coming days.</a> </p>
+          <p>
+            <a class="btn btn-primary" href="/posts" role="button">View Analytics &raquo;</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block head%}
+<title>Posts</title>
+{% endblock %}
+
+{% block body%}
+<h1>All Posts</h1> <a class="btn btn-success" href="/posts/new">Add New Post</a>
+
+    <hr>
+
+    {% for post in posts.items %}
+        <br>
+        <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
+        <h2> <a href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h2>
+        <h4><a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a></h4>
+        <h10>{{ post.date_posted.strftime('%Y-%m-%d') }}</h10>
+        <br>
+        <br>
+
+        <p style="white-space:pre-wrap">{{ post.content }}</p>
+        {% if post.author == current_user %}
+            <a class="btn btn-danger btn-sm" href='/posts/delete/{{post.id}}'>Delete</a>
+            <a class="btn btn-primary btn-sm" href="/posts/edit/{{post.id}}">Edit</a>
+        {% endif %}
+        <hr>
+    {% endfor %}
+    {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if page_num %}
+            {% if posts.page == page_num %}
+                <a class="btn btn-info mb-4" href="{{ url_for('posts', page=page_num) }}">{{page_num}}</a>
+            {% else %}
+                <a class="btn btn-outline-info mb-4" href="{{ url_for('posts', page=page_num) }}">{{page_num}}</a>
+            {% endif %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}
