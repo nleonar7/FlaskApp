@@ -9,7 +9,7 @@
 <body>
     <nav class="navbar navbar-dark bg-dark" aria-label="First navbar example">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">Niko's Blog</a>
+      <a class="navbar-brand" href="/">Property Blog</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample01" aria-controls="navbarsExample01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -40,6 +40,17 @@
           <li class="nav-item">
             <a class="nav-link" href="/posts/new">Post Something</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/properties">Properties</a>
+          </li>
+          {% if current_user.admin %}
+          <li class="nav-item">
+            <a class="nav-link" href="/property/ratings">Property Ratings (Admin Only)</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/binghamton_mls_scraped">Web Scraped Binghamton Properties (Admin Only)</a>
+          </li>
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link disabled" href="/" tabindex="-1" aria-disabled="true">About</a>
           </li>

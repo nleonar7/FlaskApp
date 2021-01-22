@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block head%}
+<title>Property Ratings</title>
+{% endblock %}
+
+
+
+<h1>Rated Locations</h1>
+{% block body%}
+    {% if current_user.admin == True %}
+        <h1>List Another Property</h1> <a class="btn btn-success" href="/property/new">Click to List</a>
+    {% endif %}
+
+    <hr>
+
+    {% for property in averages %}
+        <br>
+        <h2> {{ property[0] }}</h2>
+        <h10>Average Location Score = {{ property[1] }}</h10>
+        <h10>Average Value Score = {{ property[2] }}</h10>
+        <br>
+        <br>
+
+        <hr>
+    {% endfor %}
+
+
+{% endblock %}

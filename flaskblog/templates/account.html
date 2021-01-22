@@ -50,6 +50,21 @@
 
             </div>
             <div class=""form-group">
+                {{form.highest_rent.label(class="form-control-label")}}
+                {% if form.highest_rent.errors %}
+                    {{form.highest_rent(class="form-control form-control-lg is-invalid")}}
+                    <div class="invalid-feedback">
+                        {% for error in form.highest_rent.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{form.highest_rent(class="form-control form-control-lg")}}
+
+                {%endif%}
+
+            </div>
+            <div class=""form-group">
                 {{form.picture.label()}}
                 {{form.picture(class="form-control-file")}}
                 {% if form.picture.errors %}

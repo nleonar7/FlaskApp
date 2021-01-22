@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block head%}
+<title>Locations</title>
+{% endblock %}
+
+<h1>Click to Add The Following Binghamton Properties</h1>
+{% block body%}
+
+    <hr>
+
+    {% for pair in pairs %}
+        <br>
+        <h2> <a href="https:/{{ pair[1] }}">{{ pair[0] }}</a></h2>
+        <br>
+
+        <hr>
+    {% endfor %}
+
+
+{% endblock %}

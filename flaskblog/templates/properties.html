@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block head%}
+<title>Locations</title>
+{% endblock %}
+
+<h1>Locations to Grade</h1>
+{% block body%}
+    {% if current_user.admin == True %}
+        <h1>List Another Property</h1> <a class="btn btn-success" href="/property/new">Click to List</a>
+    {% endif %}
+
+    <hr>
+
+    {% for property in properties.items %}
+        <br>
+        <h2> <a href="{{ property.link }}">{{ property.title }}</a></h2>
+        <a class="btn btn-primary btn-sm" href='/property/rate/{{property.id}}'>Rate this property</a>
+        <h10>{{ property.date_posted.strftime('%Y-%m-%d') }}</h10>
+        <br>
+        <br>
+
+        {% if current_user.admin == True %}
+            <a class="btn btn-danger btn-sm" href='/posts/delete/{{property.id}}'>Delete</a>
+            <a class="btn btn-primary btn-sm" href="/posts/edit/{{property.id}}">Edit</a>
+        {% endif %}
+        <hr>
+    {% endfor %}
+    {% for page_num in properties.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if page_num %}
+            {% if properties.page == page_num %}
+                <a class="btn btn-info mb-4" href="{{ url_for('properties', page=page_num) }}">{{page_num}}</a>
+            {% else %}
+                <a class="btn btn-outline-info mb-4" href="{{ url_for('properties', page=page_num) }}">{{page_num}}</a>
+            {% endif %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}
+
+
+
+
+
+
+
+
+
+{% endblock %}

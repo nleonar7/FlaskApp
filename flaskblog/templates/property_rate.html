@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block head%}
+<title>{{ property.title }}</title>
+{% endblock %}
+
+{% block body%}
+<h1>Write Post</h1>
+
+    <hr>
+    <h2>Create New Blog Post:</h2>
+
+<!--
+ These are the ones you need to adapt to this form.
+ location_score=form.location_score.data
+ price_score=form.price_score.data -->
+
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset>
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+
+            <div class=""form-group">
+                {{form.location_score.label(class="form-control-label")}}
+                {% if form.location_score.errors %}
+                    {{form.location_score(class="form-control form-control-lg is-invalid")}}
+                    <div class="invalid-feedback">
+                        {% for error in form.location_score.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{form.location_score(class="form-control form-control-lg")}}
+
+                {%endif%}
+            </div>
+
+            <div class=""form-group">
+                {{form.price_score.label(class="form-control-label")}}
+                {% if form.price_score.errors %}
+                    {{form.price_score(class="form-control form-control-lg is-invalid")}}
+                    <div class="invalid-feedback">
+                        {% for error in form.price_score.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{form.price_score(class="form-control form-control-lg")}}
+
+                {%endif%}
+            </div>
+
+
+        </fieldset>
+        <br>
+        <input type="submit" value="Submit Rating">
+    </form>
+
+    <hr>
+
+    </form>
+
+
+
+{% endblock body%}
