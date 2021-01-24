@@ -32,15 +32,25 @@ def properties():
 def rate_property(property_id):
     form = ApartmentScoreForm()
     property = Apartment.query.get_or_404(property_id)
+    # perform check to see if this user has submitted for this property already
+    list_of_submitted_scores = property.scores
+    for score in list_of_submitted_scores:
+        if score.author.email == current_user.email:
+            flash('You have already rated this property.', 'danger')
+            return redirect('/properties')
     if form.validate_on_submit():
         score = ApartmentScore(location_score=form.location_score.data, price_score=form.price_score.data, title=property, author=current_user)
         db.session.add(score)
         db.session.commit()
         flash('Your rating has been submitted!', 'success')
-        """
-        msg = Message('Password Reset Request', sender='noreplytestingflask@demo.com', recipients=[user.email])
-        msg.body = "New rating has been submitted for 
-        """
+        #this next portion is just for gathering the admins to send email notifications to of a new rating submitted
+        admins = User.query.filter_by(admin=True)
+        recipients = []
+        for user in admins:
+            recipients.append(user.email)
+        msg = Message('Your posted location has been rated', sender='noreplytestingflask@demo.com', recipients=recipients)
+        msg.body = f'''New rating has been submitted for {property.title} by {score.author}. Please login to view.'''
+        mail.send(msg)
         return redirect('/properties')
     return render_template('property_rate.html', form=form, title=property.title, property=property)
     

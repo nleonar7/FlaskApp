@@ -67,3 +67,7 @@ class ApartmentScore(db.Model):
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     apartment_id = db.Column(db.Integer, db.ForeignKey('apartment.id'), nullable=False)
+
+    def __repr__(self):
+        return f"ApartmentScore('{self.title}', '{self.author.email}')"
+
