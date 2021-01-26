@@ -24,6 +24,7 @@ lxml==4.6.2
 MarkupSafe==1.1.1
 numpy==1.18.4
 Pillow==8.0.1
+psycopg2==2.8.6
 pycparser==2.20
 requests==2.25.1
 six==1.15.0
