@@ -8,12 +8,11 @@
 <h1>Write Post</h1>
 
     <hr>
-    <h2>Create New Blog Post:</h2>
-
-<!--
- These are the ones you need to adapt to this form.
- location_score=form.location_score.data
- price_score=form.price_score.data -->
+    {% if not current_user.admin %}
+    <h2>Please rate this as if you were living there:</h2>
+    {% else %}
+    <h2>Please give us your assessment on this investment</h2>
+    {% endif %}
 
 
     <form method="POST" action="">
