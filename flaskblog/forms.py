@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange
 from flaskblog.models import User, Apartment
 
 class RegistrationForm(FlaskForm):
@@ -81,6 +81,6 @@ class ApartmentForm(FlaskForm):
     submit = SubmitField('Post')
 
 class ApartmentScoreForm(FlaskForm):
-    location_score = IntegerField('Rate the location', validators=[DataRequired()])
-    price_score = IntegerField('Rate the Value Proposition', validators=[DataRequired()])
+    location_score = IntegerField('Rate the location', validators=[DataRequired(), NumberRange(0, 10, "Stay within 0-10 range")])
+    price_score = IntegerField('Rate the Value Proposition', validators=[DataRequired(), NumberRange(0, 10, "Stay within 0-10 range")])
     submit = SubmitField('Post')
