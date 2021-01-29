@@ -20,7 +20,7 @@
             <a href="/properties">Have a click! Take a look at some of the properties that we're considering or already have equity in.</a> </p>
           <p>
             <a class="btn btn-primary" href="/properties" role="button">Rate Properties &raquo;</a>
-            {% if current_user %}
+            {% if current_user.email %}
             <h2>Currently logged in as {{current_user.email}}</h2>
             {% else %}
             <h2>Please join and review the locations!</h2>
