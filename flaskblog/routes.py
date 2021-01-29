@@ -1,4 +1,5 @@
 import secrets, os
+from mapApi import API_KEY
 from PIL import Image
 from flask import render_template, redirect, flash, request, url_for, abort
 from flaskblog import app, db, bcrypt, mail
@@ -24,7 +25,7 @@ def posts():
 def properties():
     page = request.args.get('page', 1, type=int)
     properties = Apartment.query.order_by(Apartment.date_posted.desc()).paginate(per_page=7, page=page)
-    return render_template('properties.html', properties=properties)
+    return render_template('properties.html', properties=properties, API_KEY=API_KEY)
 
 
 @app.route('/property/rate/<int:property_id>', methods = ['GET','POST'])
