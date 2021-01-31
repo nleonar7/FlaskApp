@@ -49,7 +49,7 @@ def rate_property(property_id):
         recipients = []
         for user in admins:
             recipients.append(user.email)
-        msg = Message('Your posted location has been rated', sender='noreplytestingflask@demo.com', recipients=recipients)
+        msg = Message('Your posted location has been rated', sender='nikocoding@outlook.com', recipients=recipients)
         msg.body = f'''New rating has been submitted for {property.title} by {score.author}. Please login to view.'''
         mail.send(msg)
         return redirect('/properties')
@@ -224,7 +224,7 @@ def save_picture(form_picture):
 
 def send_reset_email(user):
     token = user.get_reset_token()
-    msg = Message('Password Reset Request', sender='noreplytestingflask@demo.com', recipients=[user.email])
+    msg = Message('Password Reset Request', sender='nikocoding@outlook.com', recipients=[user.email])
     msg.body = f'''To reset your password, visit the following link:
 {url_for('reset_token', token=token, _external=True)}
 
