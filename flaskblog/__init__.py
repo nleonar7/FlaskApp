@@ -21,6 +21,14 @@ app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
 app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASSWORD')
 mail = Mail(app)
 
+#bellow is from  https://www.reddit.com/r/flask/comments/2vu3ft/af_having_trouble_getting_flask_mail_to_work_with/
+#added this to try and get the blocked messages to send
+MAIL_USE_TLS = False
+MAIL_SUPPRESS_SEND = False
+MAIL_DEBUG = True
+TESTING = False
+
+
 
 from flaskblog import routes
 
