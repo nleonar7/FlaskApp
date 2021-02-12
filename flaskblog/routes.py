@@ -45,13 +45,13 @@ def rate_property(property_id):
         db.session.commit()
         flash('Your rating has been submitted!', 'success')
         #this next portion is just for gathering the admins to send email notifications to of a new rating submitted
-        admins = User.query.filter_by(admin=True)
-        recipients = []
-        for user in admins:
-            recipients.append(user.email)
-        msg = Message('Your posted location has been rated', sender='nikocoding@outlook.com', recipients=recipients)
-        msg.body = f'''New rating has been submitted for {property.title} by {score.author}. Please login to view.'''
-        mail.send(msg)
+        #admins = User.query.filter_by(admin=True)
+        #recipients = []
+        #for user in admins:
+        #    recipients.append(user.email)
+        #msg = Message('Your posted location has been rated', sender='nikocoding@outlook.com', recipients=recipients)
+        #msg.body = f'''New rating has been submitted for {property.title} by {score.author}. Please login to view.'''
+        #mail.send(msg)
         return redirect('/properties')
     return render_template('property_rate.html', form=form, title=property.title, property=property)
     
