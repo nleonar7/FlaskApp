@@ -272,3 +272,12 @@ def view_binghamton():
     else:
         flash('You do not have the necessary entitlements to view.', 'warning')
         return redirect('/properties')
+
+
+@app.route('/admin', methods=['GET'])
+def view_binghamton():
+    if current_user.admin:
+        return render_template('AdminThings.html')
+    else:
+        flash('You do not have the necessary entitlements to view.', 'warning')
+        return redirect('/properties')
