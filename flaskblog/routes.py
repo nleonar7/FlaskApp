@@ -275,7 +275,7 @@ def view_binghamton():
 
 
 @app.route('/admin', methods=['GET'])
-def view_binghamton():
+def admin_stuff():
     if current_user.admin:
         return render_template('AdminThings.html')
     else:
