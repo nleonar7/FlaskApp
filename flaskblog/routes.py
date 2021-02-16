@@ -277,7 +277,19 @@ def view_binghamton():
 @app.route('/admin', methods=['GET'])
 def admin_stuff():
     if current_user.admin:
-        return render_template('AdminThings.html')
+        other_admins = User.query.filter_by(admin=True)
+        rated_properties = {}
+        scores = ApartmentScore.query.all()
+        for score in scores:
+            if score.title.title not in rated_properties:
+                rated_properties[score.title.title] = [1, [score.location_score], [score.price_score]]
+            else:
+                rated_properties[score.title.title][0] += 1
+                rated_properties[score.title.title][1].append(score.location_score)
+                rated_properties[score.title.title][2].append(score.price_score)
+                
+        return render_template('AdminThings.html', other_admins=other_admins)
+
     else:
         flash('You do not have the necessary entitlements to view.', 'warning')
         return redirect('/properties')
