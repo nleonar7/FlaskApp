@@ -1,5 +1,5 @@
 import secrets, os
-from mapApi import API_KEY
+from flaskblog.mapApi import API_KEY
 from PIL import Image
 from flask import render_template, redirect, flash, request, url_for, abort
 from flaskblog import app, db, bcrypt, mail
@@ -276,6 +276,7 @@ def view_binghamton():
 
 @app.route('/admin', methods=['GET'])
 def admin_stuff():
+    #still needs a lot of work, the template doesn't use any of the passed in data, and need to figure out how to make the table dynamic within the same page, rather than redirecting
     if current_user.admin:
         other_admins = User.query.filter_by(admin=True)
         rated_properties = {}

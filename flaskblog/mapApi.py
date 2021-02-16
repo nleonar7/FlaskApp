@@ -2,7 +2,7 @@ import os
 from pprint import pprint
 import googlemaps #pip install googlemaps
 
-API_KEY = 'AIzaSyDRB64l8RHUXuIxhVH1IyBg1Vhh9aGqT9U' #os.environ.get('API_KEY')
+API_KEY = os.environ.get('API_KEY')
 map_client = googlemaps.Client(API_KEY)
 
 '''
