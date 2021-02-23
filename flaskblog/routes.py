@@ -93,6 +93,7 @@ def view_ratings():
         flash('Only Admins can list properties!', 'danger')
         return redirect('/properties')
 
+
 @app.route('/property/ratingsByUser', methods=['GET'])
 @login_required
 def view_ratings_by_user():
