@@ -111,7 +111,7 @@ def view_ratings_by_user():
         averages = []
         for title, ratings in cache.items():
             averages.append((title, sum(ratings[0])/len(ratings[0]), sum(ratings[1])/len(ratings[1])))
-        return render_template('view_ratings.html', averages=averages, users=users, cache=cache)
+        return render_template('ratings_by_user.html', averages=averages, users=users, cache=cache)
     else:
         flash('Only Admins can list properties!', 'danger')
         return redirect('/properties')
