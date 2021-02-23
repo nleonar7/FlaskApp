@@ -93,6 +93,29 @@ def view_ratings():
         flash('Only Admins can list properties!', 'danger')
         return redirect('/properties')
 
+@app.route('/property/ratingsByUser', methods=['GET'])
+@login_required
+def view_ratings_by_user():
+    if current_user.admin:
+        scores = ApartmentScore.query.order_by(ApartmentScore.date_posted.desc())
+        cache = {}
+        for score in scores:
+            author = score.author
+            email = author.email
+            if email in cache:
+                cache[email][0].append(score.location_score)
+                cache[email][1].append(score.price_score)
+            else:
+                cache[email] = [[score.location_score], [score.price_score]]
+        users = list(cache.keys())
+        averages = []
+        for title, ratings in cache.items():
+            averages.append((title, sum(ratings[0])/len(ratings[0]), sum(ratings[1])/len(ratings[1])))
+        return render_template('view_ratings.html', averages=averages, users=users, cache=cache)
+    else:
+        flash('Only Admins can list properties!', 'danger')
+        return redirect('/properties')
+
 
 
 @app.route('/post/<int:post_id>')
@@ -278,7 +301,7 @@ def view_binghamton():
 def admin_stuff():
     #still needs a lot of work, the template doesn't use any of the passed in data, and need to figure out how to make the table dynamic within the same page, rather than redirecting
     if current_user.admin:
-        other_admins = User.query.filter_by(admin=True)
+        all_admins = User.query.filter_by(admin=True)
         rated_properties = {}
         scores = ApartmentScore.query.all()
         for score in scores:
@@ -289,7 +312,7 @@ def admin_stuff():
                 rated_properties[score.title.title][1].append(score.location_score)
                 rated_properties[score.title.title][2].append(score.price_score)
                 
-        return render_template('AdminThings.html', other_admins=other_admins)
+        return render_template('AdminThings.html', other_admins=all_admins)
 
     else:
         flash('You do not have the necessary entitlements to view.', 'warning')
