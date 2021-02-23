@@ -8,11 +8,12 @@
 
 <h1>Rated Locations</h1>
 <hr>
-<a class="btn btn-primary btn-sm" href='/property/ratingsByUser'>View by Login</a>
+
 
 {% block body%}
     {% if current_user.admin == True %}
         <h1>List Another Property</h1> <a class="btn btn-success" href="/property/new">Click to List</a>
+        <a class="btn btn-primary btn-sm" href='/property/ratingsByUser'>View by Login</a>
     {% endif %}
 
     <hr>
