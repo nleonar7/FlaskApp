@@ -1,15 +1,16 @@
+
 import os
-if os.environ.get("FLASK_ENV") != "production":
-    with app.app_context():
-        from flaskblog import models  # Ensure models are loaded
-        db.create_all()
-    from dotenv import load_dotenv
-    load_dotenv()
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+
+# Load .env for local/dev before app config
+if os.environ.get("FLASK_ENV") != "production":
+    from dotenv import load_dotenv
+    load_dotenv()
+
 
 app = Flask(__name__)
 # Use environment variables for secrets
@@ -28,6 +29,7 @@ app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
 app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASSWORD')
 mail = Mail(app)
 
+
 #bellow is from  https://www.reddit.com/r/flask/comments/2vu3ft/af_having_trouble_getting_flask_mail_to_work_with/
 #added this to try and get the blocked messages to send
 MAIL_USE_TLS = False
@@ -37,7 +39,14 @@ TESTING = False
 
 
 
+
 from flaskblog import routes
+
+# Automatically create tables in dev/local
+if os.environ.get("FLASK_ENV") != "production":
+    with app.app_context():
+        from flaskblog import models  # Ensure models are loaded
+        db.create_all()
 
 
 
