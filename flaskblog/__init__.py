@@ -6,8 +6,9 @@ from flask_login import LoginManager
 from flask_mail import Mail
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '88ae1cb251be78575246856c955f7104'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://bvnewsbxtddjsv:ce3f4f0c36e9611c224db96093b70167a2142a20dac6d850daadd1c245289db3@ec2-3-216-181-219.compute-1.amazonaws.com:5432/d115s3psivdfro'
+# Use environment variables for secrets
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
