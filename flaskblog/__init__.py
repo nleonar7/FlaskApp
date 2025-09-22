@@ -1,4 +1,10 @@
 import os
+if os.environ.get("FLASK_ENV") != "production":
+    with app.app_context():
+        from flaskblog import models  # Ensure models are loaded
+        db.create_all()
+    from dotenv import load_dotenv
+    load_dotenv()
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
