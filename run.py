@@ -1,9 +1,8 @@
+import os
 from flaskblog import app
 
 
 if __name__ == "__main__":
-    app.run()
-
-#commenting this out so that its here for you to remember to use when running on local host
-#if __name__ == "__main__":
-#    app.run(debug=True)
+    # If running on Heroku, DYNO is set; otherwise, assume local
+    debug_mode = not bool(os.environ.get("DYNO"))
+    app.run(debug=debug_mode)

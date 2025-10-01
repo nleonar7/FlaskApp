@@ -15,7 +15,10 @@ if os.environ.get("FLASK_ENV") != "production":
 app = Flask(__name__)
 # Use environment variables for secrets
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+uri = os.environ.get('DATABASE_URL') or os.environ.get('SQLALCHEMY_DATABASE_URI')
+if uri and uri.startswith('postgres://'):
+    uri = uri.replace('postgres://', 'postgresql://', 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
