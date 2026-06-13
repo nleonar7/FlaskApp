@@ -38,3 +38,12 @@ virtualenv
 Werkzeug
 WTForms
 wheel
+Flask-Migrate
+alembic
+celery
+redis
+geoalchemy2
+shapely
+tenacity
+python-dotenv
+pytest

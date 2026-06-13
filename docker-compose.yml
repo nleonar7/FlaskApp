@@ -1,0 +1,35 @@
+# Local dev infra for FlaskApp.
+# Usage:
+#   docker compose up -d        # start postgres+postgis and redis
+#   docker compose down         # stop
+#   docker compose down -v      # stop and wipe data volumes
+#
+# Then point .env at the running services:
+#   SQLALCHEMY_DATABASE_URI=postgresql://flaskapp:flaskapp@localhost:5432/flaskapp
+#   CELERY_BROKER_URL=redis://localhost:6379/0
+#   CELERY_RESULT_BACKEND=redis://localhost:6379/0
+#
+# Optional — devs can keep using SQLite locally if they prefer.
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: flaskapp
+      POSTGRES_PASSWORD: flaskapp
+      POSTGRES_DB: flaskapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

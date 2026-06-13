@@ -1,15 +1,6 @@
 import os
-from pprint import pprint
-import googlemaps #pip install googlemaps
+import googlemaps
 
-API_KEY = 'AIzaSyDRB64l8RHUXuIxhVH1IyBg1Vhh9aGqT9U'#os.environ.get('API_KEY')
-map_client = googlemaps.Client(API_KEY)
+API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY') or os.environ.get('API_KEY')
 
-'''
-def get_longitute_latitude(address):
-    response = map_client.geocode(address)
-    pprint(response[0])#['geometry'])
-
-get_longitute_latitude('241 84 street Brooklyn, NY')
-
-'''
+map_client = googlemaps.Client(API_KEY) if API_KEY else None
