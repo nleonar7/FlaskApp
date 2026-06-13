@@ -45,8 +45,4 @@ migrate = Migrate(app, db)
 
 
 from flaskblog import routes  # noqa: E402,F401
-
-if os.environ.get("FLASK_ENV") != "production":
-    with app.app_context():
-        from flaskblog import models  # noqa: F401
-        db.create_all()
+from flaskblog import models  # noqa: E402,F401  (ensure models register with SQLAlchemy)

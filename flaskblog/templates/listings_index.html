@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Listings</title>
+{% endblock %}
+
+{% block body %}
+<h1>Listings</h1>
+
+<form method="get" class="row g-2 align-items-end mb-4">
+  <div class="col-md-2">
+    <label class="form-label">State</label>
+    <select name="state" class="form-select form-select-sm">
+      <option value="">Any</option>
+      {% for s in state_options %}
+        <option value="{{ s }}" {% if filters.state == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Type</label>
+    <select name="listing_type" class="form-select form-select-sm">
+      <option value="">Any</option>
+      {% for t in listing_types %}
+        <option value="{{ t }}" {% if filters.listing_type == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Source</label>
+    <select name="source" class="form-select form-select-sm">
+      <option value="">Any</option>
+      {% for src in sources %}
+        <option value="{{ src }}" {% if filters.source == src %}selected{% endif %}>{{ src }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Min $</label>
+    <input type="number" name="min_price" value="{{ filters.min_price or '' }}" class="form-control form-control-sm">
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Max $</label>
+    <input type="number" name="max_price" value="{{ filters.max_price or '' }}" class="form-control form-control-sm">
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Sort</label>
+    <select name="sort" class="form-select form-select-sm">
+      <option value="recent" {% if filters.sort == 'recent' %}selected{% endif %}>Newest</option>
+      <option value="price_asc" {% if filters.sort == 'price_asc' %}selected{% endif %}>Price asc</option>
+      <option value="price_desc" {% if filters.sort == 'price_desc' %}selected{% endif %}>Price desc</option>
+    </select>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-primary btn-sm">Apply filters</button>
+    <a href="/listings" class="btn btn-outline-secondary btn-sm">Clear</a>
+  </div>
+</form>
+
+<p class="text-muted">{{ listings.total }} listing{% if listings.total != 1 %}s{% endif %} matched.</p>
+
+<table class="table table-sm table-hover">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Price</th>
+      <th>Location</th>
+      <th>Source</th>
+      <th>Type</th>
+      <th>Last seen</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for l in listings.items %}
+      <tr>
+        <td><a href="{{ url_for('listing_detail', listing_id=l.id) }}">{{ l.title }}</a></td>
+        <td>
+          {% if l.price_dollars is not none %}
+            ${{ '{:,.0f}'.format(l.price_dollars) }}
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {{ l.city or '' }}{% if l.city and l.state %}, {% endif %}{{ l.state or '' }}
+        </td>
+        <td>{{ l.source }}</td>
+        <td>{{ l.listing_type }}</td>
+        <td>{{ l.last_seen_at.strftime('%Y-%m-%d') }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="text-center text-muted">No listings yet — run a scrape to populate.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if listings.pages > 1 %}
+<nav>
+  {% for page_num in listings.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+    {% if page_num %}
+      <a href="{{ url_for('listings_index', page=page_num, **filters) }}"
+         class="btn btn-sm {% if page_num == listings.page %}btn-info{% else %}btn-outline-info{% endif %}">{{ page_num }}</a>
+    {% else %}<span>…</span>{% endif %}
+  {% endfor %}
+</nav>
+{% endif %}
+{% endblock %}

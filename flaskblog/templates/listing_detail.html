@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>{{ listing.title }}</title>
+{% endblock %}
+
+{% block body %}
+<a href="/listings" class="btn btn-sm btn-outline-secondary mb-3">&larr; Back to listings</a>
+
+<h1>{{ listing.title }}</h1>
+<p>
+  <span class="badge bg-secondary">{{ listing.source }}</span>
+  <span class="badge bg-info text-dark">{{ listing.listing_type }}</span>
+  <span class="badge bg-{% if listing.status == 'active' %}success{% else %}secondary{% endif %}">{{ listing.status }}</span>
+</p>
+
+<dl class="row">
+  <dt class="col-sm-3">Price</dt>
+  <dd class="col-sm-9">
+    {% if listing.price_dollars is not none %}
+      ${{ '{:,.0f}'.format(listing.price_dollars) }}
+    {% else %}<span class="text-muted">not listed</span>{% endif %}
+  </dd>
+
+  <dt class="col-sm-3">Location</dt>
+  <dd class="col-sm-9">
+    {{ listing.street or '' }}
+    {% if listing.street %}<br>{% endif %}
+    {{ listing.city or '' }}{% if listing.city and listing.state %}, {% endif %}{{ listing.state or '' }} {{ listing.postal_code or '' }}
+    {% if listing.county %}<br><small class="text-muted">{{ listing.county }} County</small>{% endif %}
+  </dd>
+
+  {% if listing.acres or listing.lot_sqft %}
+  <dt class="col-sm-3">Lot</dt>
+  <dd class="col-sm-9">
+    {% if listing.acres %}{{ '{:.2f}'.format(listing.acres) }} acres{% endif %}
+    {% if listing.lot_sqft %}({{ '{:,}'.format(listing.lot_sqft) }} sqft){% endif %}
+  </dd>
+  {% endif %}
+
+  {% if listing.beds or listing.baths_total %}
+  <dt class="col-sm-3">Beds / Baths</dt>
+  <dd class="col-sm-9">{{ listing.beds or '—' }} / {{ listing.baths_total or '—' }}</dd>
+  {% endif %}
+
+  {% if listing.year_built %}
+  <dt class="col-sm-3">Year built</dt>
+  <dd class="col-sm-9">{{ listing.year_built }}</dd>
+  {% endif %}
+
+  {% if listing.lat and listing.lng %}
+  <dt class="col-sm-3">Coordinates</dt>
+  <dd class="col-sm-9">{{ '{:.5f}'.format(listing.lat) }}, {{ '{:.5f}'.format(listing.lng) }}</dd>
+  {% endif %}
+
+  <dt class="col-sm-3">First seen</dt>
+  <dd class="col-sm-9">{{ listing.first_seen_at.strftime('%Y-%m-%d %H:%M UTC') }}</dd>
+
+  <dt class="col-sm-3">Last seen</dt>
+  <dd class="col-sm-9">{{ listing.last_seen_at.strftime('%Y-%m-%d %H:%M UTC') }}</dd>
+</dl>
+
+{% if listing.description %}
+<h4>Description</h4>
+<p>{{ listing.description }}</p>
+{% endif %}
+
+<p>
+  <a href="{{ listing.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+    View on {{ listing.source }} &rarr;
+  </a>
+</p>
+
+{% if current_user.is_authenticated and current_user.admin %}
+<details class="mt-4">
+  <summary class="text-muted">Raw source payload (admin)</summary>
+  <pre class="bg-light p-2 small">{{ listing.raw_payload | tojson(indent=2) }}</pre>
+</details>
+{% endif %}
+{% endblock %}

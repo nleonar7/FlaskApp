@@ -4,10 +4,12 @@ from PIL import Image
 from flask import render_template, redirect, flash, request, url_for, abort
 from flaskblog import app, db, bcrypt, mail
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, BlogPostForm, RequestResetForm, ResetPasswordForm, ApartmentForm, ApartmentScoreForm
-from flaskblog.models import User, BlogPost, Apartment, ApartmentScore
+from flaskblog.models import User, BlogPost, Apartment, ApartmentScore, Listing, LISTING_TYPES, LISTING_STATUSES
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
 from flaskblog.scrape import gen_title_link
+
+STATE_OPTIONS = ('NY', 'NJ', 'CT', 'PA', 'MA', 'VT')
 
 @app.route('/')
 def index():
@@ -26,6 +28,68 @@ def properties():
     page = request.args.get('page', 1, type=int)
     properties = Apartment.query.order_by(Apartment.date_posted.desc()).paginate(per_page=7, page=page)
     return render_template('properties.html', properties=properties, API_KEY=API_KEY)
+
+
+@app.route('/listings', methods=['GET'])
+def listings_index():
+    filters = _parse_listing_filters(request.args)
+    query = Listing.query.filter(Listing.status == filters['status'])
+    if filters['state']:
+        query = query.filter(Listing.state == filters['state'])
+    if filters['listing_type']:
+        query = query.filter(Listing.listing_type == filters['listing_type'])
+    if filters['source']:
+        query = query.filter(Listing.source == filters['source'])
+    if filters['min_price'] is not None:
+        query = query.filter(Listing.price_cents >= filters['min_price'] * 100)
+    if filters['max_price'] is not None:
+        query = query.filter(Listing.price_cents <= filters['max_price'] * 100)
+
+    page = request.args.get('page', 1, type=int)
+    sort = filters['sort']
+    if sort == 'price_asc':
+        query = query.order_by(Listing.price_cents.asc().nullslast())
+    elif sort == 'price_desc':
+        query = query.order_by(Listing.price_cents.desc().nullslast())
+    else:
+        query = query.order_by(Listing.last_seen_at.desc())
+
+    listings = query.paginate(per_page=20, page=page)
+    sources = [s for (s,) in db.session.query(Listing.source).distinct().all()]
+    return render_template(
+        'listings_index.html',
+        listings=listings,
+        filters=filters,
+        state_options=STATE_OPTIONS,
+        listing_types=LISTING_TYPES,
+        listing_statuses=LISTING_STATUSES,
+        sources=sources,
+    )
+
+
+@app.route('/listings/<int:listing_id>', methods=['GET'])
+def listing_detail(listing_id):
+    listing = Listing.query.get_or_404(listing_id)
+    return render_template('listing_detail.html', listing=listing)
+
+
+def _parse_listing_filters(args):
+    def _int(name):
+        v = args.get(name)
+        try:
+            return int(v) if v not in (None, '') else None
+        except ValueError:
+            return None
+
+    return {
+        'state': args.get('state') or None,
+        'listing_type': args.get('listing_type') or None,
+        'source': args.get('source') or None,
+        'status': args.get('status') or 'active',
+        'min_price': _int('min_price'),
+        'max_price': _int('max_price'),
+        'sort': args.get('sort') or 'recent',
+    }
 
 
 @app.route('/property/rate/<int:property_id>', methods = ['GET','POST'])
