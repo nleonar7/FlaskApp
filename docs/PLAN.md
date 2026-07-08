@@ -1,5 +1,19 @@
 # Real Estate Aggregation, Filtering & Ranking Platform
 
+## Status (updated 2026-07-07)
+
+| Phase | State | Shipped in |
+| --- | --- | --- |
+| Phase 0 — Foundations (Flask-Migrate, Celery+Redis, envs, scrape.py cleanup) | ✅ Shipped | `main` |
+| Phase 1 — `Listing` model + Craigslist scraper + `/listings` UI | ✅ Shipped (commit `9672b11`) | `main` |
+| Phase 2 — Multi-source (Redfin/Realtor), WTForms filter, map endpoint, `SavedSearch` | ⏭ Next | — |
+| Phase 3 — Ranking layer (NYC FAR, Upstate land, user-defined) | ⏳ Planned | — |
+| Phase 4 — Social layer (comments, digests) | ⏳ Deferred | — |
+
+**Workflow note**: each phase is committed directly to `main` and pushed to `origin/main`. No feature branches or PRs — see `feedback_phase_workflow` memory.
+
+**Exposed secret**: the Google Maps API key `AIzaSyDRB64l8RH...` is in git history (`flaskblog/mapApi.py` prior to Phase 0). Needs rotation in Google Cloud Console — not yet done.
+
 ## Context
 
 `FlaskApp` today is a single-module Flask blog with an early prototype `Apartment` model and a brittle, import-time MLS scraper (`flaskblog/scrape.py:4` runs `requests.get` at module load). It already has solid foundations we can reuse: user accounts with admin roles (`flaskblog/models.py:12`), Google Maps integration (`flaskblog/mapApi.py`), Postgres-or-SQLite config, email, and a `/properties` map page.
