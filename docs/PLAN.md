@@ -118,6 +118,15 @@ We ship in vertical slices so each phase produces something usable.
 
 **Goals**: Ship the "find the best deal" experience.
 
+> **In progress (first slice shipped):** NYC PLUTO valuation foundation. `nyc_pluto_lot`
+> (keyed by BBL) + `bbl_cache` models & migration; `flaskblog/pluto/` ingest loader (Socrata
+> `64uk-42ks`, no API key); `flaskblog/ranking/pluto.py` metrics (buildable-sqft, FAR-used,
+> $/buildable-SF, sqft-discrepancy, free NYC GeoSearch address→BBL); first pluggable scorer
+> `UnderbuiltInfillScorer` in `flaskblog/ranking/scorers.py`; and `notebooks/pluto_analysis.ipynb`
+> exploratory analysis. Loaded Staten Island + Brooklyn (~402k lots) into local SQLite.
+> **Next:** capture listing address/sqft in the scraper to join listings→PLUTO by BBL, then a
+> `ListingScore` table + surfacing on `/listings`.
+
 1. **Pluggable scorers** under new `flaskblog/ranking/scorers.py`:
    - `NYCFARScorer` → `price / (lot_sqft * far_max)` = $ per buildable SF. Requires NYC zoning data (we'll ingest the NYC PLUTO open-data dataset as a one-time bulk load into a `nyc_pluto_lot` table keyed by BBL).
    - `UpstateLandScorer` → composite: `price/acre` normalized by county median, bonus for road frontage, penalty for wetlands/floodplain (overlay against FEMA flood layer if loadable).

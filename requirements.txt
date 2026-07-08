@@ -47,3 +47,6 @@ shapely
 tenacity
 python-dotenv
 pytest
+pandas
+matplotlib
+jupyter

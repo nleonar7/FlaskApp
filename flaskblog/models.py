@@ -146,3 +146,92 @@ class GeocodeCache(db.Model):
     def __repr__(self):
         return f"GeocodeCache({self.address_key!r} -> {self.lat},{self.lng})"
 
+
+class NycPlutoLot(db.Model):
+    """A NYC tax lot from the PLUTO dataset, keyed by BBL.
+
+    PLUTO (Primary Land Use Tax Lot Output) is NYC's authoritative tax-lot
+    dataset. We store a curated subset of its ~90 columns plus a raw_payload
+    escape hatch. Used as source-of-truth for lot/building area and FAR
+    (floor-area-ratio) so we can spot under-built lots (built FAR << max FAR
+    = development upside) and, later, listing-vs-record discrepancies.
+    """
+
+    __tablename__ = 'nyc_pluto_lot'
+
+    # Borough-Block-Lot, the natural key. Stored as a 10-char string so
+    # leading zeros survive and Socrata's numeric coercion can't corrupt it.
+    bbl = db.Column(db.String(10), primary_key=True)
+
+    # Identity / address (for GeoSearch join-back and display).
+    borough = db.Column(db.String(2))          # 'MN','BX','BK','QN','SI'
+    block = db.Column(db.Integer)
+    lot = db.Column(db.Integer)
+    address = db.Column(db.String(200))
+    zipcode = db.Column(db.String(10))
+
+    # Areas (square feet) — the source of truth for sqft discrepancies.
+    lot_area = db.Column(db.Integer)           # lotarea
+    bldg_area = db.Column(db.Integer)          # bldgarea (total gross floor area)
+    com_area = db.Column(db.Integer)           # comarea
+    res_area = db.Column(db.Integer)           # resarea
+    num_floors = db.Column(db.Float)           # numfloors (can be fractional)
+    units_res = db.Column(db.Integer)          # unitsres
+    units_total = db.Column(db.Integer)        # unitstotal
+    year_built = db.Column(db.Integer)         # yearbuilt
+
+    # FAR / zoning — the development-upside core.
+    built_far = db.Column(db.Float)            # builtfar
+    resid_far = db.Column(db.Float)            # residfar
+    comm_far = db.Column(db.Float)             # commfar
+    facil_far = db.Column(db.Float)            # facilfar
+    land_use = db.Column(db.String(2))         # landuse
+    zone_dist1 = db.Column(db.String(20))      # zonedist1
+
+    # Value context.
+    owner_name = db.Column(db.String(200))     # ownername
+    assess_land = db.Column(db.BigInteger)     # assessland (dollars)
+    assess_tot = db.Column(db.BigInteger)      # assesstot (dollars)
+
+    lat = db.Column(db.Float)                  # latitude (ships with PLUTO)
+    lng = db.Column(db.Float)                  # longitude
+
+    # Provenance.
+    pluto_version = db.Column(db.String(12))   # e.g. '25v1'
+    raw_payload = db.Column(db.JSON)           # full source row
+    ingested_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (
+        Index('ix_pluto_borough', 'borough'),
+        Index('ix_pluto_zonedist1', 'zone_dist1'),
+        Index('ix_pluto_landuse', 'land_use'),
+        # Accelerates the under-built ranking scan.
+        Index('ix_pluto_far', 'resid_far', 'built_far'),
+    )
+
+    @property
+    def max_far(self):
+        """The greatest of the three allowable FARs, or None if unknown."""
+        vals = [v for v in (self.resid_far, self.comm_far, self.facil_far) if v]
+        return max(vals) if vals else None
+
+    def __repr__(self):
+        return f"NycPlutoLot({self.bbl} {self.address!r})"
+
+
+class BblCache(db.Model):
+    """Caches address -> BBL resolutions from NYC Planning's free GeoSearch,
+    so repeat lookups never re-hit the network. Mirrors GeocodeCache."""
+
+    __tablename__ = 'bbl_cache'
+
+    id = db.Column(db.Integer, primary_key=True)
+    address_key = db.Column(db.String(500), unique=True, nullable=False)
+    bbl = db.Column(db.String(10))
+    confidence = db.Column(db.Float)
+    resolved_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"BblCache({self.address_key!r} -> {self.bbl})"
+
