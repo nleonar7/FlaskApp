@@ -1,0 +1,32 @@
+# Minimal dependencies to RUN THE WEB APP (e.g. PythonAnywhere free tier).
+# Excludes the heavy analysis/background stack in requirements.txt
+# (pandas, matplotlib, jupyter, celery, redis, shapely, geoalchemy2,
+# psycopg2, gunicorn) which the web process never imports — keeping the
+# install well under the 512 MB free-tier disk quota.
+#
+# Data ingest (PLUTO loader, scrapers) needs the full requirements.txt and
+# outbound internet, so it runs locally — the resulting SQLite DB is uploaded.
+
+Flask
+Flask-Bcrypt
+Flask-Login
+Flask-Mail
+Flask-SQLAlchemy
+Flask-WTF
+Flask-Migrate
+WTForms
+SQLAlchemy
+alembic
+bcrypt
+email-validator
+itsdangerous
+Jinja2
+MarkupSafe
+Werkzeug
+click
+blinker
+Pillow
+requests
+beautifulsoup4
+lxml
+python-dotenv
