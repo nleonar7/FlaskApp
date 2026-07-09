@@ -26,8 +26,19 @@ def ping() -> str:
 
 
 @celery.task(name='flaskblog.tasks.scrape_source')
-def scrape_source(source_name: str, region: str) -> dict[str, int]:
+def scrape_source(
+    source_name: str,
+    region: str,
+    fetch_details: bool = True,
+    detail_limit: int | None = None,
+) -> dict[str, int]:
     """Fetch listings from a source/region and upsert into the DB.
+
+    List pages carry only headline fields; ``fetch_details`` enriches each new
+    (and any un-enriched existing) listing from its detail page to capture the
+    street address, coordinates, and building sqft needed for PLUTO matching.
+    ``detail_limit`` bounds how many detail pages are fetched per run (each is
+    rate-limited), so a large region can be backfilled across several runs.
 
     Returns a small summary dict with counts.
     """
@@ -35,13 +46,21 @@ def scrape_source(source_name: str, region: str) -> dict[str, int]:
     now = datetime.utcnow()
 
     seen_ids: set[str] = set()
-    created = updated = 0
+    created = updated = detailed = 0
 
     for dto in scraper.iter_listings(region):
         seen_ids.add(dto.source_listing_id)
         existing = Listing.query.filter_by(
             source=dto.source, source_listing_id=dto.source_listing_id
         ).one_or_none()
+
+        # Enrich new listings, and backfill existing ones still missing a street.
+        wants_detail = existing is None or existing.street is None
+        under_limit = detail_limit is None or detailed < detail_limit
+        if fetch_details and wants_detail and under_limit:
+            scraper.fetch_detail(dto)
+            detailed += 1
+
         if existing is None:
             db.session.add(_dto_to_model(dto, first_seen=now, last_seen=now))
             created += 1
@@ -52,7 +71,10 @@ def scrape_source(source_name: str, region: str) -> dict[str, int]:
     withdrawn = _mark_withdrawn(source_name, region, seen_ids, now)
     db.session.commit()
 
-    summary = {'created': created, 'updated': updated, 'withdrawn': withdrawn, 'seen': len(seen_ids)}
+    summary = {
+        'created': created, 'updated': updated, 'withdrawn': withdrawn,
+        'detailed': detailed, 'seen': len(seen_ids),
+    }
     log.info('scrape_source(%s,%s) -> %s', source_name, region, summary)
     return summary
 

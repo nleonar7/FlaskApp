@@ -78,6 +78,16 @@ class BaseScraper(ABC):
         """Yield ListingDTOs for the given region."""
         raise NotImplementedError
 
+    def fetch_detail(self, dto: ListingDTO) -> ListingDTO:
+        """Enrich a DTO by fetching its detail page (address, sqft, etc.).
+
+        Default is a no-op; scrapers whose list pages omit fields override
+        this. Called by the ingest task for new (and un-enriched) listings.
+        Should mutate and return ``dto``; failures should be swallowed so a
+        single bad detail page doesn't abort the whole run.
+        """
+        return dto
+
     def get(self, url: str, **kwargs) -> requests.Response:
         """Polite GET with per-instance rate limiting."""
         self._sleep_if_needed()
